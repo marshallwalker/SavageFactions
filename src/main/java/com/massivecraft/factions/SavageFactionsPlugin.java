@@ -12,7 +12,7 @@ import com.massivecraft.factions.configuration.ConfigurationBuilder;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.integration.WorldGuard;
 import com.massivecraft.factions.integration.dynmap.EngineDynmap;
-import com.massivecraft.factions.integration.placeholder.ClipPlaceholderAPIManager;
+import com.massivecraft.factions.integration.placeholder.FactionPlaceholderExpansion;
 import com.massivecraft.factions.listeners.*;
 import com.massivecraft.factions.struct.Access;
 import com.massivecraft.factions.struct.ChatMode;
@@ -65,7 +65,7 @@ public class SavageFactionsPlugin extends MPlugin {
     // Persistence related
     public static ArrayList<FPlayer> playersFlying = new ArrayList();
     public Essentials ess;
-    public boolean PlaceholderApi;
+
     // Commands
     public FCmdRoot cmdBase;
     public CmdAutoHelp cmdAutoHelp;
@@ -85,7 +85,7 @@ public class SavageFactionsPlugin extends MPlugin {
     SkriptAddon skriptAddon;
     private boolean locked = false;
     private Integer AutoLeaveTask = null;
-    private ClipPlaceholderAPIManager clipPlaceholderAPIManager;
+    private FactionPlaceholderExpansion factionPlaceholderExpansion;
     private boolean mvdwPlaceholderAPIManager = false;
 
     public SavageFactionsPlugin() {
@@ -301,16 +301,14 @@ public class SavageFactionsPlugin extends MPlugin {
 
     private void setupPlaceholderAPI() {
         Plugin clip = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+
         if (clip != null && clip.isEnabled()) {
-            this.clipPlaceholderAPIManager = new ClipPlaceholderAPIManager();
-            if (this.clipPlaceholderAPIManager.register()) {
-                PlaceholderApi = true;
+            this.factionPlaceholderExpansion = new FactionPlaceholderExpansion(this);
+            boolean registered = factionPlaceholderExpansion.register();
+
+            if(registered) {
                 log(Level.INFO, "Successfully registered placeholders with PlaceholderAPI.");
-            } else {
-                PlaceholderApi = false;
             }
-        } else {
-            PlaceholderApi = false;
         }
 
         Plugin mvdw = getServer().getPluginManager().getPlugin("MVdWPlaceholderAPI");
@@ -358,7 +356,7 @@ public class SavageFactionsPlugin extends MPlugin {
     }
 
     public boolean isClipPlaceholderAPIHooked() {
-        return this.clipPlaceholderAPIManager != null;
+        return this.factionPlaceholderExpansion != null;
     }
 
     public boolean isMVdWPlaceholderAPIHooked() {
