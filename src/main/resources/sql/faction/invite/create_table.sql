@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS faction_invite (
+  uniqueId INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  faction_id VARCHAR(36) NOT NULL,
+  player_uuid VARCHAR(36)
+)

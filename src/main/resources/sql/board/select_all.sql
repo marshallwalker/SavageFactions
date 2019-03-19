@@ -1,0 +1,1 @@
+SELECT faction_id, world_name, chunk_x, chunk_z FROM faction_board

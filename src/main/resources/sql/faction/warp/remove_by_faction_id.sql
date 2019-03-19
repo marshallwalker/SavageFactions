@@ -1,0 +1,1 @@
+DELETE FROM faction_warp WHERE faction_id=?

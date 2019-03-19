@@ -1,0 +1,1 @@
+SELECT target_id, relation FROM faction_relation WHERE faction_id=?

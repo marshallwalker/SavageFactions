@@ -1,0 +1,1 @@
+DELETE FROM faction_board WHERE world_name=? AND chunk_x=? AND chunk_z=?

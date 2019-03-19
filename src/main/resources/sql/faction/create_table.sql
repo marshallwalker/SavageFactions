@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS faction (
+  uniqueId INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  faction_id VARCHAR(36) NOT NULL,
+  tag VARCHAR(255) NOT NULL,
+  tnt INT NOT NULL DEFAULT 0,
+  peaceful_explosions_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  permanent BOOLEAN NOT NULL DEFAULT FALSE,
+  description VARCHAR(255) NOT NULL DEFAULT "Default faction description :(",
+  `open` BOOLEAN NOT NULL DEFAULT FALSE,
+  peaceful BOOLEAN NOT NULL DEFAULT FALSE,
+  founded_date BIGINT NOT NULL,
+  power_boost DOUBLE NOT NULL DEFAULT 0.0,
+  max_vaults INT NOT NULL DEFAULT 0,
+  default_role VARCHAR (255) NOT NULL,
+  last_death INT NOT NULL DEFAULT 0,
+  paypal VARCHAR(255) NOT NULL DEFAULT "",
+  banner_pattern VARCHAR (127) NOT NULL DEFAULT ""
+)

@@ -1,0 +1,1 @@
+SELECT * FROM faction_permission_%s WHERE faction_id=?

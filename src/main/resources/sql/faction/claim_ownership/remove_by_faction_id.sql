@@ -1,0 +1,1 @@
+DELETE FROM faction_claim_ownership WHERE player_id=? AND faction_id=? AND world_name=? AND chunk_x=? AND chunk_z=?

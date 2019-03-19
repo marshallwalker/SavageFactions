@@ -1,0 +1,1 @@
+DELETE FROM faction WHERE faction_id=?

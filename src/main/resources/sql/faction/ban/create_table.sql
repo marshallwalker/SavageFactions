@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS faction_ban (
+  uniqueId INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  faction_id VARCHAR(36) NOT NULL,
+  banner_id VARCHAR(36) NOT NULL,
+  banned_id VARCHAR(36) NOT NULL,
+  banned_at BIGINT NOT NULL
+)

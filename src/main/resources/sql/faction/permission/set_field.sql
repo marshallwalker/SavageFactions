@@ -1,0 +1,1 @@
+update faction_permission_%s SET %s=? WHERE faction_id=?

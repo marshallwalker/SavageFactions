@@ -1,0 +1,1 @@
+SELECT `key`, `value` FROM faction_upgrade WHERE faction_id=?

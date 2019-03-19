@@ -1,0 +1,1 @@
+UPDATE faction SET %s=? WHERE faction_id=?

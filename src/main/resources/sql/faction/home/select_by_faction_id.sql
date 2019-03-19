@@ -1,0 +1,1 @@
+SELECT world_name, x, y, z, yaw, pitch FROM faction_home WHERE faction_id=?

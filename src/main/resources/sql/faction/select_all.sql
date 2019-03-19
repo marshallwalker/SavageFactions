@@ -1,0 +1,16 @@
+SELECT
+  faction_id,
+  tag,
+  tnt,
+  peaceful_explosions_enabled,
+  permanent,
+  description,
+  `open`,
+  peaceful,
+  founded_date,
+  power_boost,
+  max_vaults,
+  default_role,
+  last_death,
+  paypal,
+  banner_pattern FROM faction

@@ -1,0 +1,1 @@
+UPDATE faction_warp SET warp_password=? WHERE warp_name=? AND faction_id=?

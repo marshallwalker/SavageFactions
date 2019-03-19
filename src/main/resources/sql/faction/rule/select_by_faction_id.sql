@@ -1,0 +1,1 @@
+SELECT rule FROM faction_rule WHERE faction_id=? ORDER BY `index` ASC

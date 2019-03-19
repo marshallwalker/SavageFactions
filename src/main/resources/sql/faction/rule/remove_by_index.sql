@@ -1,0 +1,1 @@
+DELETE FROM faction_rule WHERE faction_id=? AND `index`=?
