@@ -430,6 +430,8 @@ public enum TL {
 	COMMAND_MONEY_LONG("&c&l[!]&7 The faction money commands."),
 	COMMAND_MONEY_DESCRIPTION("Faction money commands"),
 
+	COMMAND_MONEY_DEPOSIT_DEPOSITOR("You deposited $%s into your faction bank new balance $%s."),
+
 	COMMAND_MONEYBALANCE_SHORT("show faction balance"),
 	COMMAND_MONEYBALANCE_DESCRIPTION("Show your factions current money balance"),
 

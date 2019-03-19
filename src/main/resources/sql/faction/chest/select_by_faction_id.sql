@@ -1,1 +1,0 @@
-SELECT (`index`, item) FROM faction_chest WHERE faction_id=?

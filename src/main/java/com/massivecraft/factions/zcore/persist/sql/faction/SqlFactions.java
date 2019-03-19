@@ -27,14 +27,14 @@ public class SqlFactions extends MemoryFactions {
         sqlBuilder.path("faction/claim_ownership/create_table").execute();
         sqlBuilder.path("faction/announcement/create_table").execute();
         sqlBuilder.path("faction/home/create_table").execute();
-        sqlBuilder.path("faction/chest/create_table").execute();
 
         List<Permissable> permissables = new ArrayList<>();
         permissables.addAll(Arrays.asList(Role.values()));
         permissables.addAll(Arrays.asList(Relation.values()));
+
         permissables.forEach(permissable -> sqlBuilder
                 .path("faction/permission/create_table", permissable.name().toLowerCase())
-                .execute());
+                .executeAsyncBatched());
     }
 
     @Override
@@ -64,7 +64,6 @@ public class SqlFactions extends MemoryFactions {
         sqlBuilder.path("remove_by", "faction_claim_ownership", "faction_id").args(uniqueId).executeAsyncBatched();
         sqlBuilder.path("remove_by", "faction_announcement", "faction_id").args(uniqueId).executeAsyncBatched();
         sqlBuilder.path("remove_by", "faction_home", "faction_id").args(uniqueId).executeAsyncBatched();
-        sqlBuilder.path("remove_by", "faction_chest", "faction_id").args(uniqueId).executeAsyncBatched();
     }
 
     @Override
