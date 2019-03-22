@@ -3,14 +3,9 @@ package com.massivecraft.factions.zcore.persist.sql.faction;
 import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.struct.BanInfo;
-import com.massivecraft.factions.struct.Relation;
-import com.massivecraft.factions.struct.Role;
-import com.massivecraft.factions.util.LazyLocation;
-import com.massivecraft.factions.struct.Access;
 import com.massivecraft.factions.fperms.Permissable;
-import com.massivecraft.factions.struct.PermissableAction;
-import com.massivecraft.factions.struct.Upgrade;
+import com.massivecraft.factions.struct.*;
+import com.massivecraft.factions.util.LazyLocation;
 import com.massivecraft.factions.zcore.persist.MemoryFaction;
 import com.massivecraft.factions.zcore.persist.sql.SqlBuilder;
 import com.massivecraft.factions.zcore.persist.sql.warp.SqlFWarp;
@@ -60,7 +55,7 @@ public class SqlFaction extends MemoryFaction {
             int chunkZ = result.getInt(4);
 
             FLocation fLocation = new FLocation(worldName, chunkX, chunkZ);
-            Set<UUID> owners= claimOwnership.computeIfAbsent(fLocation, f -> new HashSet<>());
+            Set<UUID> owners = claimOwnership.computeIfAbsent(fLocation, f -> new HashSet<>());
             owners.add(playerId);
         });
 
@@ -269,35 +264,44 @@ public class SqlFaction extends MemoryFaction {
     }
 
     @Override
+    public void clearRules() {
+        super.clearRules();
+
+        sqlBuilder.path("faction/rule/remove_by_faction_id")
+                .args(uniqueId)
+                .executeAsync();
+    }
+
+    @Override
     public void addRule(String rule) {
         super.addRule(rule);
 
         sqlBuilder.path("faction/rule/insert")
                 .args(uniqueId,
-                        rules.size() - 1,
+                        rules.size(),
                         rule)
                 .executeAsync();
     }
 
     @Override
-    public void removeRule(int index) {
-        if(rules.get(index) == null) {
-            return;
+    public boolean removeRule(int index) {
+        if(index < 1 || index > rules.size()) {
+            return false;
         }
 
         super.removeRule(index);
 
-        sqlBuilder.path("faction/rule/remove_by_faction_id")
-                .args(uniqueId)
+        sqlBuilder.path("faction/rule/remove_by_index")
+                .args(uniqueId,
+                        index)
                 .executeAsync();
 
-        for (String rule : rules) {
-            sqlBuilder.path("faction/rule/insert")
-                    .args(uniqueId,
-                            rules.size() - 1,
-                            rule)
-                    .executeAsync();
-        }
+        sqlBuilder.path("faction/rule/shift_index_by_faction_id")
+                .args(uniqueId,
+                        index)
+                .executeAsync();
+
+        return true;
     }
 
     @Override

@@ -755,10 +755,13 @@ public enum TL {
 	COMMAND_RULES_ADD_INVALIDARGS("Please include a rule!"),
 	COMMAND_RULES_SET_INVALIDARGS("Please include a line number & rule!"),
 	COMMAND_RULES_REMOVE_INVALIDARGS("Please include a line number!"),
+	COMMAND_RULES_REMOVE_INVALID_INDEX("Please include a line number between 1 and %d!"),
+	COMMAND_RULES_EMPTY("&cNo faction rules have been set."),
 	COMMAND_RULES_ADD_SUCCESS("&cRule added successfully!"),
 	COMMAND_RULES_REMOVE_SUCCESS("&cRule removed successfully!"),
 	COMMAND_RULES_SET_SUCCESS("&cRule set successfully!"),
 	COMMAND_RULES_CLEAR_SUCCESS("&cRule cleared successfully!"),
+	COMMAND_RULES_NO_SUB_COMMAND("&cUnknown sub command \"%s\""),
 
 	/**
 	 * Leaving - This is accessed through a command, and so it MAY need a COMMAND_* slug :s

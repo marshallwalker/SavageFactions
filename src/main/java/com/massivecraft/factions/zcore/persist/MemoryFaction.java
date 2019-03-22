@@ -306,10 +306,15 @@ public abstract class MemoryFaction implements Faction {
         rules.add(rule);
     }
 
-    public void removeRule(int index) {
-        if (rules.get(index) != null) {
+    public boolean removeRule(int index) {
+        index--;
+
+        if(index >= 0 && index < rules.size()) {
             rules.remove(index);
+            return true;
         }
+
+        return false;
     }
 
     public void addTnt(int amt) {

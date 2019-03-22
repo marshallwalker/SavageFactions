@@ -80,7 +80,7 @@ public interface Faction extends EconomyParticipator, RelationParticipator {
 
 	void addRule(String rule);
 
-	void removeRule(int index);
+	boolean removeRule(int index);
 
 	void clearRules();
 
