@@ -5,6 +5,7 @@ import com.massivecraft.factions.SavageFactionsPlugin;
 import com.massivecraft.factions.configuration.Configuration;
 import com.massivecraft.factions.configuration.implementation.faction.RelationColorConfiguration;
 import com.massivecraft.factions.fperms.Permissable;
+import com.massivecraft.factions.permissable.PermissableGroup;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public enum Relation implements Permissable {
+public enum Relation implements Permissable, PermissableGroup {
     MEMBER(4, TL.RELATION_MEMBER_SINGULAR.toString()),
     ALLY(3, TL.RELATION_ALLY_SINGULAR.toString()),
     TRUCE(2, TL.RELATION_TRUCE_SINGULAR.toString()),

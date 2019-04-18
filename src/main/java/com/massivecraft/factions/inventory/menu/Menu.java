@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 public class Menu extends InventoryCallback implements Displayable {
     private final Map<Integer, Button> buttons = new HashMap<>();
-
     private Function<Player, Inventory> inventoryBuilder;
 
     protected void buildInventory(Function<Player, Inventory> inventoryBuilder) {

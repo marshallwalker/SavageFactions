@@ -78,7 +78,7 @@ public abstract class MemoryFPlayer implements FPlayer {
     protected transient boolean shouldTakeFallDamage = true;
     protected boolean isStealthEnabled = false;
     boolean playerAlerts = false;
-    boolean inspectMode = false;
+    protected boolean inspectMode = false;
 
     protected Consumer<String> chatCallback;
     protected Integer chatCallbackId = null;

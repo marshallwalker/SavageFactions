@@ -9,5 +9,4 @@ public interface Permissable {
 	String replacePlaceholders(String string);
 
 	String name();
-
 }

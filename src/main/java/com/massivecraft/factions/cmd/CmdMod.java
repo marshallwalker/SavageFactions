@@ -9,6 +9,8 @@ import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 public class CmdMod extends FCommand {
 
 	public CmdMod() {
@@ -34,12 +36,14 @@ public class CmdMod extends FCommand {
 
 	@Override
 	public void perform() {
+		List<String> baseCommands = p.getConfiguration().baseCommands;
+
 		FPlayer you = this.argAsBestFPlayerMatch(0);
 		if (you == null) {
 			FancyMessage msg = new FancyMessage(TL.COMMAND_MOD_CANDIDATES.toString()).color(ChatColor.GOLD);
 			for (FPlayer player : myFaction.getFPlayersByRole(Role.NORMAL)) {
 				String s = player.getName();
-				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " mod " + s);
+				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + baseCommands.get(0) + " mod " + s);
 			}
 
 			sendFancyMessage(msg);

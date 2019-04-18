@@ -1,9 +1,10 @@
 package com.massivecraft.factions;
 
 import com.massivecraft.factions.zcore.persist.MemoryFactions;
-import com.massivecraft.factions.zcore.persist.json.JSONFactions;
+import com.massivecraft.factions.zcore.persist.json.JsonFactions;
 import com.massivecraft.factions.zcore.persist.sql.faction.SqlFactions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -19,14 +20,16 @@ public abstract class Factions {
         switch (Conf.backEnd) {
             default:
             case JSON:
-                return new JSONFactions();
+                return new JsonFactions();
 
             case SQL:
                 return new SqlFactions();
         }
     }
 
-    public abstract void load();
+    public abstract void load() throws IOException;
+
+    public abstract void save() throws IOException;
 
     public abstract Faction generateFaction(UUID uniqueId, String tag);
 
@@ -59,10 +62,4 @@ public abstract class Factions {
     public abstract Faction getSafeZone();
 
     public abstract Faction getWarZone();
-
-    public abstract void convertFrom(MemoryFactions old);
-
-    public abstract void forceSave();
-
-    public abstract void forceSave(boolean sync);
 }

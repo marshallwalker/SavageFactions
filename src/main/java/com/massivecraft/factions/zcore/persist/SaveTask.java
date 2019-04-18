@@ -6,6 +6,8 @@ import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.zcore.MPlugin;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 public class SaveTask implements Runnable {
     private static boolean running = false;
@@ -17,8 +19,13 @@ public class SaveTask implements Runnable {
         }
         running = true;
         plugin.preAutoSave();
-        Factions.getInstance().forceSave(false);
-        FPlayers.getInstance().forceSave(false);
+
+        try {
+            Factions.getInstance().save();
+            FPlayers.getInstance().save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Board.getInstance().forceSave(false);
         plugin.postAutoSave();
         running = false;

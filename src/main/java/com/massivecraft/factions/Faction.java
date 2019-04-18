@@ -62,6 +62,8 @@ public interface Faction extends EconomyParticipator, RelationParticipator {
 
 	void setUniqueId(UUID uniqueId);
 
+	Map<String, Integer> getUpgrades();
+
 	void setUpgrade(Upgrade upgrade, int level);
 
 	int getUpgrade(Upgrade upgrade);
@@ -156,7 +158,7 @@ public interface Faction extends EconomyParticipator, RelationParticipator {
 
 	void confirmValidHome();
 
-	Integer getPermanentPower();
+	int getPermanentPower();
 
 	void setPermanentPower(Integer permanentPower);
 

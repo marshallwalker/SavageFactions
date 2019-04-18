@@ -3,25 +3,33 @@ package com.massivecraft.factions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import com.earth2me.essentials.Essentials;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.massivecraft.factions.cmd.CmdAutoHelp;
 import com.massivecraft.factions.cmd.FCmdRoot;
 import com.massivecraft.factions.configuration.Configuration;
 import com.massivecraft.factions.configuration.ConfigurationBuilder;
+import com.massivecraft.factions.configuration.deserialize.*;
+import com.massivecraft.factions.configuration.serialize.*;
+import com.massivecraft.factions.fperms.Permissable;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.integration.WorldGuard;
 import com.massivecraft.factions.integration.dynmap.EngineDynmap;
 import com.massivecraft.factions.integration.placeholder.FactionPlaceholderExpansion;
 import com.massivecraft.factions.listeners.*;
-import com.massivecraft.factions.struct.Access;
 import com.massivecraft.factions.struct.ChatMode;
-import com.massivecraft.factions.struct.PermissableAction;
-import com.massivecraft.factions.util.*;
+import com.massivecraft.factions.util.AutoLeaveTask;
+import com.massivecraft.factions.util.LazyLocation;
+import com.massivecraft.factions.util.UtilFly;
 import com.massivecraft.factions.zcore.CommandVisibility;
 import com.massivecraft.factions.zcore.MCommand;
 import com.massivecraft.factions.zcore.MPlugin;
-import com.massivecraft.factions.fperms.Permissable;
+import com.massivecraft.factions.zcore.persist.json.JsonFPlayer;
+import com.massivecraft.factions.zcore.persist.json.JsonFaction;
 import com.massivecraft.factions.zcore.persist.sql.SqlBuilder;
 import com.massivecraft.factions.zcore.util.TextUtil;
 import lombok.Getter;
@@ -35,16 +43,17 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -53,8 +62,10 @@ public class SavageFactionsPlugin extends MPlugin {
     // Our singleton plugin instance.
     public static SavageFactionsPlugin plugin;
 
-    @Getter private Configuration configuration;
-    @Getter private File configurationFile;
+    @Getter
+    private Configuration configuration;
+    @Getter
+    private File configurationFile;
 
     public static Permission perms = null;
     // This plugin sets the boolean true when fully enabled.
@@ -111,7 +122,7 @@ public class SavageFactionsPlugin extends MPlugin {
                     .from(configurationFile)
                     .to(Configuration.class);
 
-            if(!configurationFile.exists()) {
+            if (!configurationFile.exists()) {
                 configurationFile.createNewFile();
 
                 configurationBuilder
@@ -134,7 +145,7 @@ public class SavageFactionsPlugin extends MPlugin {
 
         serverVersion = ServerVersion.getVersion();
 
-        if(serverVersion == ServerVersion.MC_V1_13) {
+        if (serverVersion == ServerVersion.MC_V1_13) {
             changeItemIDSInConfig();
         }
 
@@ -150,6 +161,9 @@ public class SavageFactionsPlugin extends MPlugin {
 
         // Load Conf from disk
         Conf.load();
+
+        getLogger().info("Backend: " + Conf.backEnd.name());
+
         com.massivecraft.factions.integration.Essentials.setup();
 
         if (Conf.backEnd == Conf.Backend.SQL) {
@@ -157,8 +171,12 @@ public class SavageFactionsPlugin extends MPlugin {
             sqlBuilder.path("create_database").execute();
         }
 
-        FPlayers.getInstance().load();
-        Factions.getInstance().load();
+        try {
+            FPlayers.getInstance().load();
+            Factions.getInstance().load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         for (FPlayer fPlayer : FPlayers.getInstance().getAllFPlayers()) {
             Faction faction = Factions.getInstance().getFactionById(fPlayer.getFactionId());
@@ -173,7 +191,11 @@ public class SavageFactionsPlugin extends MPlugin {
         playersFlying.addAll(FPlayers.getInstance().getAllFPlayers());
         UtilFly.run();
 
-        Board.getInstance().load();
+        try {
+            Board.getInstance().load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Board.getInstance().clean();
 
         // Add Base Commands
@@ -193,7 +215,7 @@ public class SavageFactionsPlugin extends MPlugin {
         // start up task which runs the autoLeaveAfterDaysOfInactivity routine
         startAutoLeaveTask(false);
 
-        if(serverVersion != ServerVersion.MC_V17 && serverVersion != ServerVersion.MC_V18) {
+        if (serverVersion != ServerVersion.MC_V17 && serverVersion != ServerVersion.MC_V18) {
             log("Minecraft Version 1.9 or higher found, using non packet based particle API");
             useNonPacketParticles = true;
         }
@@ -306,7 +328,7 @@ public class SavageFactionsPlugin extends MPlugin {
             this.factionPlaceholderExpansion = new FactionPlaceholderExpansion(this);
             boolean registered = factionPlaceholderExpansion.register();
 
-            if(registered) {
+            if (registered) {
                 log(Level.INFO, "Successfully registered placeholders with PlaceholderAPI.");
             }
         }
@@ -376,20 +398,26 @@ public class SavageFactionsPlugin extends MPlugin {
     }
 
     @Override
-    public GsonBuilder getGsonBuilder() {
-        Type mapFLocToStringSetType = new TypeToken<Map<FLocation, Set<String>>>() {
-        }.getType();
+    public ObjectMapper getObjectMapper() {
 
-        Type accessTypeAdatper = new TypeToken<Map<Permissable, Map<PermissableAction, Access>>>() {
-        }.getType();
+        return super.getObjectMapper()
+                .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
+                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerModule(new SimpleModule()
+                        .addSerializer(JacksonSerializable.class, new JacksonSerializableSerializer())
+                        .addSerializer(Location.class, new LocationSerializer())
+                        .addSerializer(ItemStack.class, new ItemStackSerializer())
 
-        return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().enableComplexMapKeySerialization().excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE)
-                .registerTypeAdapter(accessTypeAdatper, new PermissionsMapTypeAdapter())
-                .registerTypeAdapter(LazyLocation.class, new MyLocationTypeAdapter())
-                .registerTypeAdapter(mapFLocToStringSetType, new MapFLocToStringSetTypeAdapter())
-                .registerTypeAdapter(Inventory.class, new InventoryTypeAdapter())
-                .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-                .registerTypeAdapterFactory(EnumTypeAdapter.ENUM_FACTORY);
+                        .addDeserializer(JsonFaction.class,  new JacksonDeserializableDeserializer<>(JsonFaction.class))
+                        .addDeserializer(JsonFPlayer.class, new JacksonDeserializableDeserializer<>(JsonFPlayer.class))
+                        .addDeserializer(LazyLocation.class, new JacksonDeserializableDeserializer<>(LazyLocation.class))
+
+                        .addDeserializer(Location.class, new LocationDeserializer())
+                        .addDeserializer(ItemStack.class, new ItemStackDeserializer())
+                        .addKeyDeserializer(Permissable.class, new PermissableDeserializer())
+                );
     }
 
     @Override
@@ -471,7 +499,8 @@ public class SavageFactionsPlugin extends MPlugin {
         }
 
         // otherwise, needs to be handled; presumably another plugin directly ran the command
-        String cmd = Conf.baseCommandAliases.isEmpty() ? "/f" : "/" + Conf.baseCommandAliases.get(0);
+        List<String> baseCommands = getConfiguration().baseCommands;
+        String cmd = baseCommands.isEmpty() ? "/f" : "/" + baseCommands.get(0);
         return handleCommand(sender, cmd + " " + TextUtil.implode(Arrays.asList(split), " "), false);
     }
 
@@ -479,7 +508,8 @@ public class SavageFactionsPlugin extends MPlugin {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         FPlayer fPlayer = FPlayers.getInstance().getByPlayer((Player) sender);
         List<String> completions = new ArrayList<>();
-        String cmd = Conf.baseCommandAliases.isEmpty() ? "/f" : "/" + Conf.baseCommandAliases.get(0);
+        List<String> baseCommands = getConfiguration().baseCommands;
+        String cmd = baseCommands.isEmpty() ? "/f" : "/" + baseCommands.get(0);
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         argsList.remove(argsList.size() - 1);
         String cmdValid = (cmd + " " + TextUtil.implode(argsList, " ")).trim();

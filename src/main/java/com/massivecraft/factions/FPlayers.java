@@ -6,6 +6,7 @@ import com.massivecraft.factions.zcore.persist.sql.fplayer.SqlFPlayers;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -26,7 +27,11 @@ public abstract class FPlayers {
         }
     }
 
-    public abstract void load();
+    public abstract void load() throws IOException;
+
+    public abstract void save() throws IOException;
+
+    public abstract void convertFrom(MemoryFPlayers old);
 
     public abstract FPlayer generateFPlayer(UUID uniqueId);
 
@@ -43,10 +48,4 @@ public abstract class FPlayers {
     public abstract Collection<FPlayer> getOnlinePlayers();
 
     public abstract Collection<FPlayer> getAllFPlayers();
-
-    public abstract void convertFrom(MemoryFPlayers old);
-
-    public abstract void forceSave();
-
-    public abstract void forceSave(boolean sync);
 }

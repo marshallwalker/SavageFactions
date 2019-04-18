@@ -4,6 +4,7 @@ import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.SavageFactionsPlugin;
 import com.massivecraft.factions.ServerVersion;
 import com.massivecraft.factions.fperms.Permissable;
+import com.massivecraft.factions.permissable.PermissableGroup;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum Role implements Permissable {
+public enum Role implements Permissable, PermissableGroup {
 	LEADER(4, TL.ROLE_LEADER),
 	COLEADER(3, TL.ROLE_COLEADER),
 	MODERATOR(2, TL.ROLE_MODERATOR),
@@ -152,5 +153,4 @@ public enum Role implements Permissable {
 
 		return string;
 	}
-
 }

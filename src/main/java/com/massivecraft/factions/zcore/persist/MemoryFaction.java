@@ -44,7 +44,7 @@ public abstract class MemoryFaction implements Faction {
     protected String description;
     protected boolean open;
     protected boolean peaceful;
-    protected Integer permanentPower;
+    protected int permanentPower = 0;
     protected LazyLocation home;
     protected long foundedDate;
     protected transient long lastPlayerLoggedOffTime;
@@ -350,6 +350,10 @@ public abstract class MemoryFaction implements Faction {
         vault = newlocation;
     }
 
+    public Map<String, Integer> getUpgrades() {
+        return upgrades;
+    }
+
     public int getUpgrade(Upgrade upgrade) {
         if (upgrades.keySet().contains(upgrade.toString())) {
             return upgrades.get(upgrade.toString());
@@ -509,7 +513,7 @@ public abstract class MemoryFaction implements Faction {
         this.home = null;
     }
 
-    public Integer getPermanentPower() {
+    public int getPermanentPower() {
         return this.permanentPower;
     }
 
@@ -518,7 +522,7 @@ public abstract class MemoryFaction implements Faction {
     }
 
     public boolean hasPermanentPower() {
-        return this.permanentPower != null;
+        return this.permanentPower != 0;
     }
 
     public double getPowerBoost() {

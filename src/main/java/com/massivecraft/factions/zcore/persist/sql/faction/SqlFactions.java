@@ -2,12 +2,13 @@ package com.massivecraft.factions.zcore.persist.sql.faction;
 
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.SavageFactionsPlugin;
+import com.massivecraft.factions.fperms.Permissable;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
-import com.massivecraft.factions.fperms.Permissable;
 import com.massivecraft.factions.zcore.persist.MemoryFactions;
 import com.massivecraft.factions.zcore.persist.sql.SqlBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,7 @@ public class SqlFactions extends MemoryFactions {
     }
 
     @Override
-    public void load() {
+    public void load() throws IOException {
         SavageFactionsPlugin.plugin.log("Loading factions from database...");
 
         sqlBuilder.path("faction/select_all").queryEach(result -> {
@@ -48,6 +49,11 @@ public class SqlFactions extends MemoryFactions {
 
         SavageFactionsPlugin.plugin.log("Loaded " + factions.size() + " factions!");
         super.load();
+    }
+
+    @Override
+    public void save() throws IOException {
+        //do nothing
     }
 
     @Override
@@ -88,20 +94,5 @@ public class SqlFactions extends MemoryFactions {
     @Override
     public Faction generateFaction(UUID uniqueId, String tag) {
         return new SqlFaction(uniqueId, tag);
-    }
-
-    @Override
-    public void convertFrom(MemoryFactions old) {
-        //do nothing
-    }
-
-    @Override
-    public void forceSave() {
-        //do nothing
-    }
-
-    @Override
-    public void forceSave(boolean sync) {
-        //do nothing
     }
 }

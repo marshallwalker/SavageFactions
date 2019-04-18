@@ -14,6 +14,8 @@ import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 public class CmdKick extends FCommand {
 
 	public CmdKick() {
@@ -30,24 +32,26 @@ public class CmdKick extends FCommand {
 
 	@Override
 	public void perform() {
+		List<String> baseCommands = p.getConfiguration().baseCommands;
+
 		FPlayer toKick = this.argIsSet(0) ? this.argAsBestFPlayerMatch(0) : null;
 		if (toKick == null) {
 			FancyMessage msg = new FancyMessage(TL.COMMAND_KICK_CANDIDATES.toString()).color(ChatColor.GOLD);
 			for (FPlayer player : myFaction.getFPlayersByRole(Role.NORMAL)) {
 				String s = player.getName();
-				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " kick " + s);
+				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + baseCommands.get(0) + " kick " + s);
 			}
 			if (fme.getRole().isAtLeast(Role.COLEADER)) {
 				// For both coleader and admin, add mods.
 				for (FPlayer player : myFaction.getFPlayersByRole(Role.MODERATOR)) {
 					String s = player.getName();
-					msg.then(s + " ").color(ChatColor.GRAY).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " kick " + s);
+					msg.then(s + " ").color(ChatColor.GRAY).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + baseCommands.get(0) + " kick " + s);
 				}
 				if (fme.getRole() == Role.LEADER) {
 					// Only add coleader to this for the leader.
 					for (FPlayer player : myFaction.getFPlayersByRole(Role.COLEADER)) {
 						String s = player.getName();
-						msg.then(s + " ").color(ChatColor.RED).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " kick " + s);
+						msg.then(s + " ").color(ChatColor.RED).tooltip(TL.COMMAND_KICK_CLICKTOKICK.toString() + s).command("/" + baseCommands.get(0) + " kick " + s);
 					}
 				}
 			}

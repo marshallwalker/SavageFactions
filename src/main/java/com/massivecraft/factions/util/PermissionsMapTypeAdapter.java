@@ -70,6 +70,7 @@ public class PermissionsMapTypeAdapter implements JsonDeserializer<Map<Permissab
 
 	private Permissable getPermissable(String name) {
 		// If name is uppercase then it is (probably, no way to completely know) valid if not begin conversion
+
 		if (name.equals(name.toUpperCase())) {
 			if (Role.fromString(name.toUpperCase()) != null) {
 				return Role.fromString(name.toUpperCase());

@@ -11,6 +11,8 @@ import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 public class CmdInvite extends FCommand {
 
 	public CmdInvite() {
@@ -34,6 +36,8 @@ public class CmdInvite extends FCommand {
 
 	@Override
 	public void perform() {
+		List<String> baseCommands = p.getConfiguration().baseCommands;
+
 		FPlayer target = this.argAsBestFPlayerMatch(0);
 		if (target == null) {
 			return;
@@ -73,13 +77,13 @@ public class CmdInvite extends FCommand {
 			// Tooltips, colors, and commands only apply to the string immediately before it.
 			FancyMessage message = new FancyMessage(fme.describeTo(target, true))
 					  .tooltip(TL.COMMAND_INVITE_CLICKTOJOIN.toString())
-					  .command("/" + Conf.baseCommandAliases.get(0) + " join " + myFaction.getTag())
+					  .command("/" + baseCommands.get(0) + " join " + myFaction.getTag())
 					  .then(TL.COMMAND_INVITE_INVITEDYOU.toString())
 					  .color(ChatColor.YELLOW)
 					  .tooltip(TL.COMMAND_INVITE_CLICKTOJOIN.toString())
-					  .command("/" + Conf.baseCommandAliases.get(0) + " join " + myFaction.getTag())
+					  .command("/" + baseCommands.get(0) + " join " + myFaction.getTag())
 					  .then(myFaction.describeTo(target)).tooltip(TL.COMMAND_INVITE_CLICKTOJOIN.toString())
-					  .command("/" + Conf.baseCommandAliases.get(0) + " join " + myFaction.getTag());
+					  .command("/" + baseCommands.get(0) + " join " + myFaction.getTag());
 
 			message.send(target.getPlayer());
 		}

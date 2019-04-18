@@ -6,6 +6,7 @@ import com.massivecraft.factions.zcore.persist.MemoryFPlayers;
 import com.massivecraft.factions.zcore.persist.MemoryFactions;
 import com.massivecraft.factions.zcore.persist.sql.SqlBuilder;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public class SqlFPlayers extends MemoryFPlayers {
@@ -70,12 +71,7 @@ public class SqlFPlayers extends MemoryFPlayers {
     }
 
     @Override
-    public void forceSave() {
-        // we don't save in bulk
-    }
-
-    @Override
-    public void forceSave(boolean sync) {
+    public void save() throws IOException {
         // we don't save in bulk
     }
 

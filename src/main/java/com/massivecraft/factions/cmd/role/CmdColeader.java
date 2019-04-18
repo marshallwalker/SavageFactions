@@ -10,6 +10,8 @@ import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 public class CmdColeader extends FCommand {
 	public CmdColeader() {
 		super();
@@ -33,16 +35,18 @@ public class CmdColeader extends FCommand {
 
 	@Override
 	public void perform() {
+		List<String> baseCommands = p.getConfiguration().baseCommands;
+
 		FPlayer you = this.argAsBestFPlayerMatch(0);
 		if (you == null) {
 			FancyMessage msg = new FancyMessage(TL.COMMAND_COLEADER_CANDIDATES.toString()).color(ChatColor.GOLD);
 			for (FPlayer player : myFaction.getFPlayersByRole(Role.NORMAL)) {
 				String s = player.getName();
-				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " coleader " + s);
+				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + baseCommands.get(0) + " coleader " + s);
 			}
 			for (FPlayer player : myFaction.getFPlayersByRole(Role.MODERATOR)) {
 				String s = player.getName();
-				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + Conf.baseCommandAliases.get(0) + " coleader " + s);
+				msg.then(s + " ").color(ChatColor.WHITE).tooltip(TL.COMMAND_MOD_CLICKTOPROMOTE.toString() + s).command("/" + baseCommands.get(0) + " coleader " + s);
 			}
 
 			sendFancyMessage(msg);

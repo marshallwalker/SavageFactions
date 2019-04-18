@@ -1,5 +1,8 @@
 package com.massivecraft.factions.zcore;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -26,9 +29,10 @@ import java.util.logging.Level;
 
 
 public abstract class MPlugin extends JavaPlugin {
+	public final ObjectMapper objectMapper = getObjectMapper();
 
 	// Persist related
-	public final Gson gson = this.getGsonBuilder().create();
+	//public final Gson gson = this.getGsonBuilder().create();
 	// Some utils
 	public Persist persist;
 	public TextUtil txt;
@@ -183,8 +187,12 @@ public abstract class MPlugin extends JavaPlugin {
 		}
 		// only save data if plugin actually loaded successfully
 		if (loadSuccessful) {
-			Factions.getInstance().forceSave();
-			FPlayers.getInstance().forceSave();
+			try {
+				Factions.getInstance().save();
+				FPlayers.getInstance().save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			Board.getInstance().forceSave();
 		}
 		log("Disabled");
@@ -205,9 +213,13 @@ public abstract class MPlugin extends JavaPlugin {
 	// LANG AND TAGS
 	// -------------------------------------------- //
 
-	public GsonBuilder getGsonBuilder() {
-		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE);
+	public ObjectMapper getObjectMapper() {
+		return new ObjectMapper();
 	}
+
+//	public GsonBuilder getGsonBuilder() {
+//		return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.VOLATILE);
+//	}
 
 	public void addRawTags() {
 		this.rawTags.put("l", "<green>"); // logo
@@ -224,8 +236,10 @@ public abstract class MPlugin extends JavaPlugin {
 	public void initTXT() {
 		this.addRawTags();
 
-		Type type = new TypeToken<Map<String, String>>() {
-		}.getType();
+		TypeReference type = new TypeReference<Map<String, String>>() {};
+
+//		Type type = new TypeToken<Map<String, String>>() {
+//		}.getType();
 
 		Map<String, String> tagsFromFile = this.persist.load(type, "tags");
 		if (tagsFromFile != null) {

@@ -33,6 +33,7 @@ import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 public class FCmdRoot extends FCommand {
@@ -134,7 +135,8 @@ public class FCmdRoot extends FCommand {
 
     public FCmdRoot() {
         super();
-        this.aliases.addAll(Conf.baseCommandAliases);
+
+        this.aliases.addAll(p.getConfiguration().baseCommands);
         this.aliases.removeAll(Collections.<String>singletonList(null));  // remove any nulls from extra commas
         this.allowNoSlashAccess = Conf.allowNoSlashCommand;
 

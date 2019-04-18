@@ -7,6 +7,7 @@ import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CmdSaveAll extends FCommand {
 
@@ -32,9 +33,12 @@ public class CmdSaveAll extends FCommand {
             e.printStackTrace();
         }
 
-
-        FPlayers.getInstance().forceSave(false);
-        Factions.getInstance().forceSave(false);
+        try {
+            FPlayers.getInstance().save();
+            Factions.getInstance().save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Board.getInstance().forceSave(false);
         Conf.save();
         msg(TL.COMMAND_SAVEALL_SUCCESS);

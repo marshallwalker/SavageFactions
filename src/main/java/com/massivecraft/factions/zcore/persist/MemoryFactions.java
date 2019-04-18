@@ -2,10 +2,12 @@ package com.massivecraft.factions.zcore.persist;
 
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
+import com.massivecraft.factions.SavageFactionsPlugin;
 import com.massivecraft.factions.util.MiscUtil;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.ChatColor;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -17,7 +19,9 @@ public abstract class MemoryFactions extends Factions {
 
     public final Map<UUID, Faction> factions = new ConcurrentHashMap<>();
 
-    public void load() {
+    @Override
+    public void load() throws IOException {
+        SavageFactionsPlugin.plugin.getLogger().info("Creating system factions...");
         createSystemFaction(WILDERNESS_ID, TL.WILDERNESS, TL.WILDERNESS_DESCRIPTION);
         createSystemFaction(SAFE_ZONE_ID, TL.SAFEZONE, TL.SAFEZONE_DESCRIPTION);
         createSystemFaction(WAR_ZONE_ID, TL.WARZONE, TL.WARZONE_DESCRIPTION);

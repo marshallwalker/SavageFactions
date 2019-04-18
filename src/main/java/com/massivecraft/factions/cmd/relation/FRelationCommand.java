@@ -13,6 +13,8 @@ import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 public abstract class FRelationCommand extends FCommand {
 
 	public Relation targetRelation;
@@ -84,8 +86,10 @@ public abstract class FRelationCommand extends FCommand {
 			myFaction.msg(TL.COMMAND_RELATIONS_MUTUAL, currentRelationColor + targetRelation.getTranslation(), currentRelationColor + them.getTag());
 		} else {
 			// inform the other faction of your request
+
+			List<String> baseCommands = p.getConfiguration().baseCommands;
 			them.msg(TL.COMMAND_RELATIONS_PROPOSAL_1, currentRelationColor + myFaction.getTag(), targetRelation.getColor() + targetRelation.getTranslation());
-			them.msg(TL.COMMAND_RELATIONS_PROPOSAL_2, Conf.baseCommandAliases.get(0), targetRelation, myFaction.getTag());
+			them.msg(TL.COMMAND_RELATIONS_PROPOSAL_2, baseCommands.get(0), targetRelation, myFaction.getTag());
 			myFaction.msg(TL.COMMAND_RELATIONS_PROPOSAL_SENT, currentRelationColor + them.getTag(), "" + targetRelation.getColor() + targetRelation);
 		}
 
